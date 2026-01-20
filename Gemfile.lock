@@ -1,0 +1,23 @@
+PATH
+  remote: .
+  specs:
+    varslist (0.0.7)
+      colorize (~> 1.0, >= 1.0.4)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    colorize (1.1.0)
+    dotenv (3.1.7)
+
+PLATFORMS
+  ruby
+  x86_64-linux
+
+DEPENDENCIES
+  colorize
+  dotenv
+  varslist!
+
+BUNDLED WITH
+   2.5.20

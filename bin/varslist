@@ -1,0 +1,28 @@
+#!/usr/bin/env rails
+
+rails_root = Dir.pwd
+
+require 'rubygems'
+require_relative "#{rails_root}/config/environment"
+require_relative "#{rails_root}/config/application"
+require 'varslist'
+env_vars = Varslist.list_env_variables
+
+if ARGV.empty?
+    Varslist.print_used_var_list(env_vars)
+    exit
+end
+
+if ARGV.include?('--file')
+    Varslist.print_env(env_vars)
+    exit
+end
+
+if ARGV.include?('--verify')
+    Varslist.verify_var_list(env_vars)
+    exit
+end
+
+if ARGV.include?('--help')
+    Varslist.print_help
+end

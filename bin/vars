@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+rails c
+Varslist.list_env_variables
