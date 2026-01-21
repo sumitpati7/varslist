@@ -1,10 +1,6 @@
 #!/usr/bin/env rails
 
-rails_root = Dir.pwd
-
 require 'rubygems'
-require_relative "#{rails_root}/config/environment"
-require_relative "#{rails_root}/config/application"
 require 'varslist'
 env_vars = Varslist.list_env_variables
 
