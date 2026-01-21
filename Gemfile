@@ -5,3 +5,8 @@ gemspec
 gem 'colorize'
 
 gem 'dotenv'
+
+group :development do
+  gem 'rubocop', '~> 1.60'
+  gem 'rubocop-performance'
+end

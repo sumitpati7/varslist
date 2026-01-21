@@ -12,10 +12,10 @@ module Varslist
     env_regex = /ENV\[['"]\w+['"]\]|ENV\.fetch/
     filelist = Dir['./**/**/*.*']
     filelist.each do |file|
-      if File.basename(file) =~ watch_list
+      if File.basename(file)&.match?(watch_list)
         File.foreach(file).with_index do |line, index|
           next if line.strip.empty? || line.strip.start_with?('#')
-          if line =~ env_regex
+          if line&.match?(env_regex)
             env_use_list << { "line" => line.strip, "file_name" => file, "line_number" => index + 1, "var_name" => check_var_name(line)}
           end
         end
@@ -66,10 +66,10 @@ module Varslist
     valid_env = []
     invalid_env = []
     found_envs.each do |found_env|
-      if ENV[found_env["var_name"]] != nil
-        valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
-      else
+      if ENV[found_env["var_name"]].nil?
         invalid_env << found_env["var_name"] unless invalid_env.include?(found_env["var_name"])
+      else
+        valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
       end
     end
     if !valid_env.empty?

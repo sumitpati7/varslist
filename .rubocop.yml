@@ -1,0 +1,16 @@
+inherit_from: .rubocop_todo.yml
+
+plugins:
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+  Exclude:
+    - "vendor/**/*"
+    - "tmp/**/*"
+    - "bin/**/*"
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
