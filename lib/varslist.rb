@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 require 'colorize'
+require_relative 'varslist/errors'
 
 module Varslist
   class << self
-    def initialize
-      @env_vars = list_env_variables
+    def env_vars
+      @env_vars ||= list_env_variables
     end
     
     def list_env_variables
@@ -64,16 +65,8 @@ module Varslist
       end
     end
 
-    def verify_var_list(found_envs)
-      valid_env = []
-      invalid_env = []
-      found_envs.each do |found_env|
-        if ENV[found_env["var_name"]].nil?
-          invalid_env << found_env["var_name"] unless invalid_env.include?(found_env["var_name"])
-        else
-          valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
-        end
-      end
+    def verify_var_list
+      valid_env, invalid_env = get_used_and_unused_vars
       if !valid_env.empty?
         puts "\n\nThe valid envs are:".colorize(:magenta)
         valid_env.each do |valid|
@@ -89,6 +82,29 @@ module Varslist
     end
 
     def verify!
+      invalid_env = get_used_and_unused_vars[1]
+      if invalid_env.empty?
+        puts "\n\nThe envs are valid".colorize(:green)
+      else
+        message = "The envs are invalid"
+        puts "\n\nThe envs are invalid".colorize(:red)
+        raise Varslist::MissingEnvError, message
+      end
+    end
+
+    private
+
+    def get_used_and_unused_vars
+      valid_env = []
+      invalid_env = []
+      env_vars.each do |found_env|
+        if ENV[found_env["var_name"]].nil?
+          invalid_env << found_env["var_name"] unless invalid_env.include?(found_env["var_name"])
+        else
+          valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
+        end
+      end
+      return valid_env, invalid_env
     end
   end 
 end
