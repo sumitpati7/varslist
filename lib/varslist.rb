@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 require 'colorize'
-rails_root = Dir.pwd
-require_relative "#{rails_root}/config/environment"
 
 module Varslist
   
