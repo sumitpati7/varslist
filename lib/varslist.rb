@@ -89,16 +89,12 @@ module Varslist
     def verify_var_list
       valid_env, invalid_env = fetch_used_and_unused_vars
       if !valid_env.empty?
-        puts "\n\nThe valid envs are:".colorize(:magenta)
-        valid_env.each do |valid|
-          puts "\t#{valid}".colorize(:green)
-        end
+        puts "\nThe valid envs are:".colorize(:magenta)
+        puts "#{valid_env.join(", ")}".colorize(:green)
       end
       if !invalid_env.empty?
-        puts "\n\nThe missing envs are:".colorize(:magenta)
-        invalid_env.each do |valid|
-          puts "\t#{valid}".colorize(:red)
-        end
+        puts "\nThe missing envs are:".colorize(:magenta)
+        puts "#{invalid_env.join(", ")}".colorize(:red)
       end
     end
 
@@ -112,8 +108,6 @@ module Varslist
         raise Varslist::MissingEnvError, message
       end
     end
-
-    private
 
     def fetch_used_and_unused_vars
       valid_env = []
@@ -139,6 +133,8 @@ module Varslist
       
       [valid_env, invalid_env]
     end
+    private
+
 
     def matches_skip_item?(file, skip_item)
       pattern = skip_item.to_s
