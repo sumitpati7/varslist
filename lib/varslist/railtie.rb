@@ -5,7 +5,7 @@ module Varslist
     initializer 'varslist.verify_env', before: :load_environment_config do
       next unless Rails.env.development?
 
-      Varslist.verify!
+      Varslist.verify_var_list
     end
   end
 end

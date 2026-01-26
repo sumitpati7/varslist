@@ -2,9 +2,13 @@
 
 require 'colorize'
 require_relative 'varslist/errors'
+require_relative 'varslist/configuration'
+require_relative 'varslist/railtie' if defined?(Rails::Railtie)
 
 module Varslist
   class << self
+    attr_accessor :config
+
     def env_vars
       @env_vars ||= list_env_variables
     end
@@ -56,7 +60,7 @@ module Varslist
 
     
     def print_used_var_list(found_envs)
-      puts "\n\nThe used ENV variables".colorize(:magenta)
+      puts "\nThe used ENV variables".colorize(:magenta)
       used_vars=[]
       found_envs.each do |found_env|
         used_vars << found_env["var_name"] unless used_vars.include?(found_env["var_name"])
@@ -75,7 +79,7 @@ module Varslist
         end
       end
       if !invalid_env.empty?
-        puts "\n\nThe invalid envs are:".colorize(:magenta)
+        puts "\n\nThe missing envs are:".colorize(:magenta)
         invalid_env.each do |valid|
           puts "\t#{valid}".colorize(:red)
         end
@@ -107,5 +111,10 @@ module Varslist
       end
       [valid_env, invalid_env]
     end
-  end 
+  end
+
+  def self.configure
+    self.config ||= Configuration.new
+    yield(config) if block_given?
+  end
 end

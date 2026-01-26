@@ -1,0 +1,6 @@
+name: Release varslist gem
+
+on:
+  push:
+    branches:
+      - main
