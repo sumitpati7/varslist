@@ -14,11 +14,16 @@ module Varslist
     end
     
     def list_env_variables
+      # Ensure config is initialized
+      @config ||= Configuration.new
+      
       env_use_list = []
       watch_list = /\.rb$|\.html\.erb$/
       env_regex = /ENV\[['"]\w+['"]\]|ENV\.fetch/
       filelist = Dir['./**/**/*.*']
       filelist.each do |file|
+        next if @config.skip_files&.any? { |skip_item| matches_skip_item?(file, skip_item) }
+
         if File.basename(file)&.match?(watch_list)
           File.foreach(file).with_index do |line, index|
             next if line.strip.empty? || line.strip.start_with?('#')
@@ -110,6 +115,22 @@ module Varslist
         end
       end
       [valid_env, invalid_env]
+    end
+
+    def matches_skip_item?(file, skip_item)
+      pattern = skip_item.to_s
+      # Check for glob matches
+      return true if File.fnmatch?(pattern, file, File::FNM_PATHNAME | File::FNM_DOTMATCH)
+      return true if File.fnmatch?(pattern, file.delete_prefix('./'), File::FNM_PATHNAME | File::FNM_DOTMATCH)
+
+      # Check for absolute path matches or directory prefix matches
+      abs_file = File.expand_path(file)
+      abs_pattern = File.expand_path(pattern)
+
+      return true if abs_file == abs_pattern
+      return true if abs_file.start_with?(File.join(abs_pattern, ''))
+
+      false
     end
   end
 
