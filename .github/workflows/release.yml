@@ -26,8 +26,6 @@ jobs:
       - name: Build gem
         run: gem build varslist.gemspec
 
-      - name: 
-
       - name: Publish gem to RubyGems
         env:
           RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
