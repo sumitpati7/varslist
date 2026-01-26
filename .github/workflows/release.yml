@@ -3,7 +3,7 @@ name: Release varslist gem
 on:
   push:
     branches:
-      - main
+      - feat/show-valid-and-invalid-variables-on-rails-startup
   workflow_dispatch:
 
 jobs:
