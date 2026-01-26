@@ -66,7 +66,7 @@ module Varslist
     end
 
     def verify_var_list
-      valid_env, invalid_env = get_used_and_unused_vars
+      valid_env, invalid_env = fetch_used_and_unused_vars
       if !valid_env.empty?
         puts "\n\nThe valid envs are:".colorize(:magenta)
         valid_env.each do |valid|
@@ -82,7 +82,7 @@ module Varslist
     end
 
     def verify!
-      invalid_env = get_used_and_unused_vars[1]
+      invalid_env = fetch_used_and_unused_vars[1]
       if invalid_env.empty?
         puts "\n\nThe envs are valid".colorize(:green)
       else
@@ -94,7 +94,7 @@ module Varslist
 
     private
 
-    def get_used_and_unused_vars
+    def fetch_used_and_unused_vars
       valid_env = []
       invalid_env = []
       env_vars.each do |found_env|
@@ -104,7 +104,7 @@ module Varslist
           valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
         end
       end
-      return valid_env, invalid_env
+      valid_env, invalid_env
     end
   end 
 end
