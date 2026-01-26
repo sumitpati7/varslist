@@ -7,10 +7,7 @@ module Varslist
 
     def initialize
       @enabled = true
-      @skip_files = [
-        'tmp/**',
-        'log/**'
-      ]
+      @skip_files = []
     end
   end
 end
