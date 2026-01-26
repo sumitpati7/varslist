@@ -19,7 +19,8 @@ module Varslist
           File.foreach(file).with_index do |line, index|
             next if line.strip.empty? || line.strip.start_with?('#')
             if line&.match?(env_regex)
-              env_use_list << { "line" => line.strip, "file_name" => file, "line_number" => index + 1, "var_name" => check_var_name(line)}
+              env_use_list << { "line" => line.strip, "file_name" => file, "line_number" => index + 1, 
+                                "var_name" => check_var_name(line)}
             end
           end
         end
@@ -104,7 +105,7 @@ module Varslist
           valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
         end
       end
-      valid_env, invalid_env
+      [valid_env, invalid_env]
     end
   end 
 end
