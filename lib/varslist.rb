@@ -88,7 +88,7 @@ module Varslist
 
     def verify_var_list
       valid_env, invalid_env = fetch_used_and_unused_vars
-      if !valid_env.empty?
+      if !valid_env.empty? && !config.only_show_missing
         puts "\nThe valid envs are:".colorize(:magenta)
         puts "#{valid_env.join(", ")}".colorize(:green)
       end
