@@ -23,6 +23,13 @@ jobs:
       - name: Install dependencies
         run: bundle install
 
+      - name: Get gem version
+        id: gem_version
+        run: |
+          VERSION=$(ruby -r './lib/varslist/version.rb' -e 'puts Varslist::VERSION')
+          echo "GEM_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Gem version: $VERSION"
+
       - name: Build gem
         run: gem build varslist.gemspec
 
@@ -37,3 +44,12 @@ jobs:
           EOF
           chmod 0600 ~/.gem/credentials
           gem push *.gem
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ env.GEM_VERSION }}"
+          name: "v${{ env.GEM_VERSION }}"
+          body: "Release v${{ env.GEM_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
