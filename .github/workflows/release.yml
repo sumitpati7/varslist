@@ -10,6 +10,10 @@ jobs:
   release:
     name: Release varslist gem
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -29,6 +33,18 @@ jobs:
           VERSION=$(ruby -r './lib/varslist/version.rb' -e 'puts Varslist::VERSION')
           echo "GEM_VERSION=$VERSION" >> $GITHUB_ENV
           echo "Gem version: $VERSION"
+
+      - name: Check if tag exists
+        run: |
+          if git rev-parse "v${GEM_VERSION}" >/dev/null 2>&1; then
+            echo "ERROR: Tag v${GEM_VERSION} already exists"
+            exit 1
+          fi
+
+      - name: Create git tag
+        run: |
+          git tag "v${GEM_VERSION}"
+          git push origin "v${GEM_VERSION}"
 
       - name: Build gem
         run: gem build varslist.gemspec
