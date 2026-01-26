@@ -28,8 +28,15 @@ module Varslist
           File.foreach(file).with_index do |line, index|
             next if line.strip.empty? || line.strip.start_with?('#')
             if line&.match?(env_regex)
-              env_use_list << { "line" => line.strip, "file_name" => file, "line_number" => index + 1, 
-                                "var_name" => check_var_name(line)}
+              check_var_name(line).each do |var_info|
+                env_use_list << { 
+                  "line" => line.strip, 
+                  "file_name" => file, 
+                  "line_number" => index + 1, 
+                  "var_name" => var_info[:name],
+                  "has_default" => var_info[:has_default]
+                }
+              end
             end
           end
         end
@@ -46,14 +53,18 @@ module Varslist
     
 
     def check_var_name(line)
-      if match = line.scan(/ENV\[['"]([^'"]+)['"]\]|ENV\.fetch\(['"]([^'"]+)['"]/)
-        vars=match.flatten.compact.each do |env_var|
-          env_var
-        end
-        vars.join
-      else
-        nil
+      results = []
+      
+      line.scan(/ENV\[['"]([^'"]+)['"]\]/) do |match|
+        results << { name: match[0], has_default: false }
       end
+      
+      line.scan(/ENV\.fetch\(\s*['"]([^'"]+)['"]\s*(?:,\s*([^)]*))?\s*\)\s*(\{)?/) do |name, default_arg, block_start|
+        has_default = !default_arg.nil? || !block_start.nil?
+        results << { name: name, has_default: has_default }
+      end
+      
+      results
     end
     
     def print_env(found_envs)
@@ -107,13 +118,25 @@ module Varslist
     def fetch_used_and_unused_vars
       valid_env = []
       invalid_env = []
+      
+      # Track status for each variable
+      # A variable is invalid only if it is missing AND required at least once (no default)
+      vars_status = {}
+      
       env_vars.each do |found_env|
-        if ENV[found_env["var_name"]].nil?
-          invalid_env << found_env["var_name"] unless invalid_env.include?(found_env["var_name"])
+        name = found_env["var_name"]
+        vars_status[name] ||= { required: false, present: !ENV[name].nil? }
+        vars_status[name][:required] = true unless found_env["has_default"]
+      end
+      
+      vars_status.each do |name, status|
+        if status[:present] || !status[:required]
+          valid_env << name
         else
-          valid_env << found_env["var_name"] unless valid_env.include?(found_env["var_name"])
+          invalid_env << name
         end
       end
+      
       [valid_env, invalid_env]
     end
 
