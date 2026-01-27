@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+return unless defined?(Varslist)
+
 Varslist.configure do |config|
   # If true, enable varslist
   # Default value is true
