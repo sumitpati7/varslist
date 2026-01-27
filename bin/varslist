@@ -15,7 +15,7 @@ if ARGV.include?('--file')
 end
 
 if ARGV.include?('--verify')
-    Varslist.verify_var_list(env_vars)
+    Varslist.verify_var_list
     exit
 end
 
