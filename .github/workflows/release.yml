@@ -1,0 +1,71 @@
+name: Release varslist gem
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  release:
+    name: Release varslist gem
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2.2'
+          bundler-cache: true
+
+      - name: Install dependencies
+        run: bundle install
+
+      - name: Get gem version
+        id: gem_version
+        run: |
+          VERSION=$(ruby -r './lib/varslist/version.rb' -e 'puts Varslist::VERSION')
+          echo "GEM_VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Gem version: $VERSION"
+
+      - name: Check if tag exists
+        run: |
+          if git rev-parse "v${GEM_VERSION}" >/dev/null 2>&1; then
+            echo "ERROR: Tag v${GEM_VERSION} already exists"
+            exit 1
+          fi
+
+      - name: Create git tag
+        run: |
+          git tag "v${GEM_VERSION}"
+          git push origin "v${GEM_VERSION}"
+
+      - name: Build gem
+        run: gem build varslist.gemspec
+
+      - name: Publish gem to RubyGems
+        env:
+          RUBYGEMS_API_KEY: ${{ secrets.RUBYGEMS_API_KEY }}
+        run: |
+          mkdir -p ~/.gem
+          cat > ~/.gem/credentials << EOF
+          ---
+          :rubygems_api_key: ${RUBYGEMS_API_KEY}
+          EOF
+          chmod 0600 ~/.gem/credentials
+          gem push *.gem
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ env.GEM_VERSION }}"
+          name: "v${{ env.GEM_VERSION }}"
+          body: "Release v${{ env.GEM_VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
