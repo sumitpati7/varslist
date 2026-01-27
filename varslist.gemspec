@@ -4,7 +4,7 @@
 
 Gem::Specification.new do |s|
   s.name = 'varslist'
-  s.version = '0.2.4'
+  s.version = '0.3.0'
   s.summary = 'Display the list of created Environment variables'
   s.author = 'Sumit Pati'
   s.files = Dir['bin/varslist', 'Gemfile', 'lib/**/*.rb']

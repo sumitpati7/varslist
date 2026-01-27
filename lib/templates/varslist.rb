@@ -7,10 +7,7 @@ Varslist.configure do |config|
 
   # List of files to be skipped
   # Default value is []
-  # config.skip_files = [
-  #   Rails.root.join('tmp'),
-  #   Rails.root.join('log')
-  # ]
+  # config.skip_files = []
 
   # If true, only show missing envs when the server starts
   # Default value is true
